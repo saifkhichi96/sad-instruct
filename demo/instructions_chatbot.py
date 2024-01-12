@@ -1,0 +1,117 @@
+import json
+from json.decoder import JSONDecodeError
+
+# Colorama for colored terminal output
+from colorama import init, Fore, Style
+init(autoreset=True)
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
+# Local imports
+from prompting import PromptingStrategy
+
+
+class InstructionsChatbot(PromptingStrategy):
+    def __init__(self, scene_graph, scenario):
+        super().__init__(init_cfg='configs/scenario2instructions.py')
+        self.user_prompt.set('scene_graph', scene_graph)
+        self.user_prompt.set('scenario', scenario)
+
+        print('### System ###')
+        print(self.prompter.system_prompt)
+        print('')
+
+        self.started = False
+        self.kill = False
+
+    def start(self):
+        self.started = True
+        self.kill = False
+
+        print('### User ###')
+        print(self.user_prompt.template)
+        print('$scene_graph: [SceneGraph]')
+        print('$scenario:', self.user_prompt.get('scenario'))
+        print('')
+
+        response = self.prompt(self.user_prompt)
+        self.print_response(response)
+
+        while not self.kill:
+            print('### User ###')
+            prompt = input(">>> ")
+            if prompt == "exit":
+                self.kill = True
+            else:
+                print('')
+
+                # Remove $ signs from the prompt, as it is reserved for variables
+                # and this chatbot only supports variables in the initial prompts
+                prompt = prompt.replace('$', '')
+
+                response = self.prompt(prompt)
+                self.print_response(response)
+
+    def print_response(self, response):
+        print(Fore.YELLOW + '### Chatbot ###')
+
+        # Try to decode the response as JSON
+        try:
+            response = json.loads(response)
+        except JSONDecodeError:
+            # Fallback to splitting on newlines
+            response = response.split('\n')
+
+        for instruction in response:
+            print(Fore.CYAN + f"- {instruction}")
+        print('')
+
+
+def main():
+    # Load the scene graph
+    print('----------------------------------------------------------')
+    print("Loading scene graph... ", end='')
+    scene_graph = {
+        "scene": {
+            "location": "indoor cafe",
+            "setting": "costume party",
+            "objects": [
+                {"id": "table1", "type": "table", "attributes": ["round", "wooden"], "relations": [{"with": "chair1", "relation": "adjacent to"}, {
+                    "with": "chair2", "relation": "adjacent to"}, {"with": "person1", "relation": "in front of"}, {"with": "person2", "relation": "in front of"}]},
+                {"id": "chair1", "type": "chair", "attributes": ["white", "metal"], "relations": [
+                    {"with": "table1", "relation": "facing"}, {"with": "person1", "relation": "occupied by"}]},
+                {"id": "chair2", "type": "chair", "attributes": ["white", "metal"], "relations": [
+                    {"with": "table1", "relation": "facing"}, {"with": "person2", "relation": "occupied by"}]},
+                {"id": "person1", "type": "person", "attributes": ["sitting", "spaceman costume"], "relations": [
+                    {"with": "chair1", "relation": "sitting on"}, {"with": "table1", "relation": "facing"}, {"with": "person2", "relation": "talking to"}]},
+                {"id": "person2", "type": "person", "attributes": ["sitting", "rabbit costume", "pink"], "relations": [
+                    {"with": "chair2", "relation": "sitting on"}, {"with": "table1", "relation": "facing"}, {"with": "person1", "relation": "talking to"}]},
+                {"id": "person3", "type": "person", "attributes": ["standing", "vampire costume", "black"], "relations": [
+                    {"with": "wall", "relation": "leaning against"}, {"with": "person4", "relation": "interacting with"}]},
+                {"id": "person4", "type": "person", "attributes": ["standing", "superhero costume", "red"], "relations": [
+                    {"with": "wall", "relation": "leaning against"}, {"with": "person3", "relation": "interacting with"}]}
+            ],
+            "background_elements": [
+                {"id": "wall", "type": "wall", "attributes": ["decorated", "party decorations"], "relations": [
+                    {"with": "person3", "relation": "behind"}, {"with": "person4", "relation": "behind"}]}
+            ]
+        }
+    }
+    print("Done!")
+
+    # Get the scenario
+    scenario = input("Enter the scenario: ")
+    print('')
+
+    print(Fore.GREEN + 'The chatbot will now start. Type "exit" to exit.')
+    print(Style.BRIGHT + Fore.MAGENTA + '----------------------------------------------------------')
+
+    # Start the chatbot
+    chatbot = InstructionsChatbot(scene_graph, scenario)
+    chatbot.start()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,7 @@
+type: OpenAIPrompter
+init_cfg:
+  model: 'gpt-3.5-turbo'
+  temperature: 0.5
+  repetition_penalty: 1.2
+  top_p: 0.9
+  max_tokens: 100

@@ -67,6 +67,7 @@ class OpenAIPrompter(BasePrompter):
         self.model = model
         self.system_prompt = None
         self.messages = []
+        self.use_history = True
 
     @property
     def system_prompt(self) -> Optional[Prompt]:
@@ -87,7 +88,9 @@ class OpenAIPrompter(BasePrompter):
         return response
 
     def _ask_chat(self, prompt: Prompt) -> List[str]:
-        messages = self.messages.copy()
+        messages = []
+        if self.use_history:
+            messages.extend(self.messages)
 
         # Add system prompt if it exists
         if self.system_prompt and len(messages) == 0:
@@ -95,7 +98,6 @@ class OpenAIPrompter(BasePrompter):
 
         # Add user prompt
         messages.append({"role": prompt.role, "content": prompt.build()})
-        self.messages.append(messages[-1])
 
         # Ask OpenAI
         choices = self.client.chat.completions.create(
@@ -109,7 +111,10 @@ class OpenAIPrompter(BasePrompter):
         response = responses[0]
 
         # Save history and return the first response
-        self.messages.append({"role": "assistant", "content": response})
+        if self.use_history:
+            messages.append({"role": "assistant", "content": response})
+            self.messages = messages
+
         return responses
 
     def _ask_completion(self, prompt: Prompt) -> List[str]:

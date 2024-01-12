@@ -46,22 +46,3 @@ class Prompt:
 
     def __str__(self) -> str:
         return self.build()
-
-
-class PromptBuilder:
-    @staticmethod
-    def from_file(path: str, parameters: dict = {}) -> Prompt:
-        # Load the prompt file
-        with open(path, 'r') as f:
-            prompt_cfg = eval(f.read())
-
-        # Extract components from the file
-        template = prompt_cfg.get('template', '').strip()
-        parameters = prompt_cfg.get('parameters', parameters)
-
-        # Check that the prompt is a non-empty string
-        if not isinstance(template, str) or len(template) == 0:
-            raise ValueError('Prompt must be a non-empty string.')
-
-        # Build and return the Prompt object
-        return Prompt(template, parameters)

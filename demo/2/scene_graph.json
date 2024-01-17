@@ -1,0 +1,91 @@
+{
+    "scene": {
+        "person": {
+            "attributes": [
+                "front center",
+                "wearing gray shirt"
+            ],
+            "relations": {
+                "standing_behind": [
+                    "counter"
+                ]
+            }
+        },
+        "counter": {
+            "attributes": [
+                "wooden",
+                "front"
+            ],
+            "relations": {
+                "supports": [
+                    "notebook",
+                    "timer",
+                    "grinder"
+                ]
+            }
+        },
+        "espresso machine": {
+            "attributes": [
+                "silver",
+                "complex",
+                "right side"
+            ],
+            "relations": {
+                "next_to": "coffee grinder",
+                "above": "counter"
+            }
+        },
+        "coffee grinder": {
+            "attributes": [
+                "black",
+                "with doser",
+                "right side"
+            ],
+            "relations": {
+                "next_to": "espresso machine",
+                "above": "counter"
+            }
+        },
+        "second coffee grinder": {
+            "attributes": [
+                "transparent bean holder",
+                "left side"
+            ],
+            "relations": {
+                "next_to": "kettle",
+                "above": "counter"
+            }
+        },
+        "kettle": {
+            "attributes": [
+                "black",
+                "left side"
+            ],
+            "relations": {
+                "next_to": "second coffee grinder",
+                "above": "counter"
+            }
+        },
+        "notebook": {
+            "attributes": [
+                "green",
+                "on counter"
+            ],
+            "relations": {
+                "left_of": "timer",
+                "in_front_of": "person"
+            }
+        },
+        "timer": {
+            "attributes": [
+                "digital",
+                "white",
+                "on counter"
+            ],
+            "relations": {
+                "right_of": "notebook",
+                "in_front_of": "person"
+            }
+        }
+    }
+}

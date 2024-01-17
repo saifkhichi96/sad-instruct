@@ -4,4 +4,4 @@ init_cfg:
   temperature: 0.5
   repetition_penalty: 1.2
   top_p: 0.9
-  max_tokens: 100
+  max_tokens: 256

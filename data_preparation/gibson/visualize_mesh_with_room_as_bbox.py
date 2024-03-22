@@ -2,7 +2,7 @@ import trimesh
 import json
 import numpy as np
 
-def visualize_mesh_with_bbox(obj_path, point, size):
+def visualize_mesh_with_room_as_bbox(obj_path, point, size):
     """
     Visualizes a 3D mesh with a bounding box centered at a given point.
 
@@ -28,7 +28,7 @@ def visualize_mesh_with_bbox(obj_path, point, size):
     scene.show()
 
 
-def create_mesh_within_bbox_center_size(obj_path, bbox_center, bbox_size):
+def visualize_room_only(obj_path, bbox_center, bbox_size):
     """
     Creates a new mesh from the original mesh based on the center and size of a bounding box.
 
@@ -75,5 +75,5 @@ if __name__ == '__main__':
     point = data['room'][1]['location']  # Replace with your point's coordinates
     size = data['room'][1]['size']  # Replace with your bbox sizes
 
-    visualize_mesh_with_bbox(obj_path, point, size)
-    create_mesh_within_bbox_center_size(obj_path, point, size)
+    visualize_mesh_with_room_as_bbox(obj_path, point, size)
+    visualize_room_only(obj_path, point, size)

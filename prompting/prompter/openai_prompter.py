@@ -97,7 +97,28 @@ class OpenAIPrompter(BasePrompter):
             messages.append(self.system_prompt)
 
         # Add user prompt
-        messages.append({"role": prompt.role, "content": prompt.build()})
+        if prompt.image_url is not None and 'vision' in self.model:
+            prompt_content = {
+                "role": prompt.role,
+                "messages": [
+                    {
+                        "type": "text",
+                        "text": prompt.build(),
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": prompt.image_url
+                        }
+                    }
+                ]
+            }
+        else:
+            prompt_content = {
+                "role": prompt.role,
+                "content": prompt.build()
+            }
+        messages.append(prompt_content)
 
         # Ask OpenAI
         choices = self.client.chat.completions.create(

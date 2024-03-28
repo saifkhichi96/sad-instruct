@@ -161,4 +161,5 @@ cython_debug/
 
 
 # Local files
+data/
 out/

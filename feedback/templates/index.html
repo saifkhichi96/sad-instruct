@@ -1,0 +1,35 @@
+{% extends "_layouts/base.html" %}
+
+<style>
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 32px;
+        background-color: #f9f9f9;
+    }
+</style>
+
+
+{% block content %}
+<div class="container p-4">
+    <h1>Feedback</h1>
+    <p>Help us improve our model by providing feedback on the objects detected in the images below.</p>
+    <form method="post">
+        {% for item in data %}
+        <div class="card p-4 mb-4">
+            <h2>{{ item['scan'] }}</h2>
+            <p>{{ item['scenario'] }}</p>
+            <span>
+                {% for obj in item['objects'] %}
+                <label>
+                    {% set checked = 'checked' if obj['selected'] else '' %}
+                    <input type="checkbox" name="objects-{{ loop.index0 }}-{{ loop.index }}" value="{{ obj['label'] }}" {{ checked }}>
+                    {{ obj['label'] }}
+                </label>
+                {% endfor %}
+            </span>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

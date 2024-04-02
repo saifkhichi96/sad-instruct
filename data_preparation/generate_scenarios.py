@@ -43,17 +43,18 @@ def save_response(response, scan, save_file):
         except JSONDecodeError:
             pass
 
-    # Filter invalid scenarios
-    valid_scenarios = []
-    for scenario in scenarios:
-        if 'scenario' in scenario and 'objects' in scenario:
-            valid_scenarios.append(scenario)
 
     # Read existing data if file exists
+    valid_scenarios = []
     if os.path.exists(save_file):
         with open(save_file, 'r') as f:
             existing_data = json.load(f)
             valid_scenarios.extend(existing_data['scenarios'])
+
+    # Filter invalid scenarios
+    for scenario in scenarios:
+        if 'scenario' in scenario and 'objects' in scenario:
+            valid_scenarios.append(scenario)
 
     # Write the valid scenarios to a file
     scan['scenarios'] = valid_scenarios
@@ -69,6 +70,16 @@ for scan in tqdm(dataset):
         'affordances': obj['affordances'] if 'affordances' in obj else [],
         'attributes': obj['attributes'],
     } for obj in objects]
+
+    # Skip if the scan already has enough scenarios
+    save_file = os.path.join(save_path, f'{scan_id}.json')
+    if os.path.exists(save_file):
+        with open(save_file, 'r') as f:
+            existing_data = json.load(f)
+            num_scenarios = len(existing_data['scenarios'])
+            if num_scenarios >= 5:
+                print(f"Skipping {scan_id} as it already has {num_scenarios} scenarios.")
+                continue
 
     # Create a prompting strategy
     strategy = PromptingStrategy(init_cfg=dict(
@@ -88,5 +99,4 @@ for scan in tqdm(dataset):
     response = strategy.prompt(strategy.user_prompt)
 
     # Export the scenarios to a file
-    save_file = os.path.join(save_path, f'{scan_id}.json')
     save_response(response, scan, save_file)

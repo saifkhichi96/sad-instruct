@@ -5,11 +5,14 @@ from .prompt_builder import Prompt, PromptBuilder
 
 
 class PromptingStrategy:
-    def __init__(self, init_cfg: str) -> None:
+    def __init__(self, init_cfg: Union[str, dict]) -> None:
         """ Initialize the prompting strategy with the given config. """
-        # Load the config file
-        with open(init_cfg, 'r') as f:
-            init_cfg = eval(f.read())
+        if isinstance(init_cfg, str):
+            # Load the config file
+            with open(init_cfg, 'r') as f:
+                init_cfg = eval(f.read())
+        elif not isinstance(init_cfg, dict):
+            raise ValueError('init_cfg must be a path to a config file or a dictionary.')
 
         # Build the prompter
         self.prompter = build_prompter_from_cfg(init_cfg['prompter_cfg'])

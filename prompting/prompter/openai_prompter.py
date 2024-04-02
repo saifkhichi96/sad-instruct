@@ -100,7 +100,7 @@ class OpenAIPrompter(BasePrompter):
         if prompt.image_url is not None and 'vision' in self.model:
             prompt_content = {
                 "role": prompt.role,
-                "messages": [
+                "content": [
                     {
                         "type": "text",
                         "text": prompt.build(),

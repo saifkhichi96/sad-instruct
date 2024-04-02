@@ -1,8 +1,8 @@
 import trimesh
-import json
 import numpy as np
 
-def visualize_mesh_with_room_as_bbox(obj_path, point, size):
+
+def visualize_building_with_room_mask(obj_path, point, size):
     """
     Visualizes a 3D mesh with a bounding box centered at a given point.
 
@@ -16,10 +16,11 @@ def visualize_mesh_with_room_as_bbox(obj_path, point, size):
 
     # Calculate the center of the bbox from the corner point
     # center_point = np.array(point) - np.array(size) / 2
-    center_point = np.array(point) 
+    center_point = np.array(point)
 
     # Create the bbox
-    bbox = trimesh.creation.box(extents=size, transform=trimesh.transformations.translation_matrix(center_point))
+    bbox = trimesh.creation.box(
+        extents=size, transform=trimesh.transformations.translation_matrix(center_point))
 
     # Create a scene and add both the mesh and the bbox for visualization
     scene = trimesh.Scene([mesh, bbox])
@@ -28,7 +29,7 @@ def visualize_mesh_with_room_as_bbox(obj_path, point, size):
     scene.show()
 
 
-def visualize_room_only(obj_path, bbox_center, bbox_size):
+def visualize_building_room(obj_path, bbox_center, bbox_size):
     """
     Creates a new mesh from the original mesh based on the center and size of a bounding box.
 
@@ -46,12 +47,15 @@ def visualize_room_only(obj_path, bbox_center, bbox_size):
     bbox_max = np.array(bbox_center) + np.array(bbox_size) / 2
 
     # Find vertices within the bounding box
-    inside_bbox = np.all((original_mesh.vertices >= bbox_min) & (original_mesh.vertices <= bbox_max), axis=1)
-    inside_vertex_indices = np.where(inside_bbox)[0]  # Get the indices of vertices inside the bbox
-    
+    inside_bbox = np.all((original_mesh.vertices >= bbox_min) & (
+        original_mesh.vertices <= bbox_max), axis=1)
+    # Get the indices of vertices inside the bbox
+    inside_vertex_indices = np.where(inside_bbox)[0]
+
     # Create a mapping from old vertex indices to new ones
-    new_vertex_indices = {old_index: new_index for new_index, old_index in enumerate(inside_vertex_indices)}
-    
+    new_vertex_indices = {old_index: new_index for new_index,
+                          old_index in enumerate(inside_vertex_indices)}
+
     # Filter faces to only those where all vertices are inside the bbox, and update their indices
     filtered_faces = []
     for face in original_mesh.faces:
@@ -61,19 +65,28 @@ def visualize_room_only(obj_path, bbox_center, bbox_size):
             filtered_faces.append(new_face)
 
     # Create new mesh using filtered vertices and faces
-    new_mesh = trimesh.Trimesh(vertices=original_mesh.vertices[inside_bbox], faces=filtered_faces)
+    new_mesh = trimesh.Trimesh(
+        vertices=original_mesh.vertices[inside_bbox], faces=filtered_faces)
 
     # Visualize the new mesh
     scene = trimesh.Scene([new_mesh])
     scene.show()
 
-if __name__ == '__main__':
-    # Testing the visualization function
-    a = np.load('3DSceneGraph_tiny/data/verified_graph/3DSceneGraph_Allensville.npz', allow_pickle=True)
-    data = a['output'].item()
-    obj_path = 'gibson_tiny/Allensville/mesh_z_up.obj'  # Replace with the path to your OBJ file
-    point = data['room'][1]['location']  # Replace with your point's coordinates
-    size = data['room'][1]['size']  # Replace with your bbox sizes
 
-    visualize_mesh_with_room_as_bbox(obj_path, point, size)
-    visualize_room_only(obj_path, point, size)
+if __name__ == '__main__':
+    # Define paths.
+    scene_name = "Allensville"
+    graph_path = "3DSceneGraph_tiny/data/verified_graph/3DSceneGraph_${scene_name}.npz"
+    mesh_path = "gibson_tiny/${scene_name}/mesh_z_up.obj"
+
+    # Load room data from the graph.
+    room_id = 1
+    room_data = np.load(graph_path, allow_pickle=True)['output'].item()
+    center = room_data['room'][room_id]['location']
+    size = room_data['room'][room_id]['size']
+
+    # Visualize the building with the room mask.
+    visualize_building_with_room_mask(mesh_path, center, size)
+
+    # Visualize the room only.
+    visualize_building_room(mesh_path, center, size)

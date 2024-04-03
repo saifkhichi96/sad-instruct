@@ -11,6 +11,8 @@ app = Flask(__name__)
 def index():
     queue_path = "data/3DSSG/feedback/"
     completed_path = "data/3DSSG/feedback_response/"
+    os.makedirs(queue_path, exist_ok=True)
+    os.makedirs(completed_path, exist_ok=True)
 
     queue_files = os.listdir(queue_path)
     completed_files = os.listdir(completed_path)
@@ -65,4 +67,14 @@ def submit():
 
 
 if __name__ == '__main__':
-    app.run()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--host', type=str, default='0.0.0.0')
+    parser.add_argument('--port', type=int, default=5000)
+    args = parser.parse_args()
+
+    app.run(
+        host=args.host,
+        port=args.port,
+        debug=True
+    )

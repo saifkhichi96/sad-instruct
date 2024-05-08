@@ -81,9 +81,9 @@ def main(scene_graph_path):
     # Load the scene graph
     print('----------------------------------------------------------')
     print("Loading scene graph... ", end='')
-    scene_graph = json.load(open(scene_graph_path, 'r'))[-1]['content']
-    SceneGraph.parse(scene_graph).visualize('scene_graph.png')
-    exit()
+    scene_graph = json.load(open(scene_graph_path, 'r')) # [-1]['content']
+    # SceneGraph.parse(scene_graph).visualize('scene_graph.png')
+    # exit()
     print("Done!")
 
     # Get the scenario

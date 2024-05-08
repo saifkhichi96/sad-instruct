@@ -1,5 +1,5 @@
 dict(
-    prompter_cfg="configs/prompter/gpt-3.5-turbo.yaml",
+    prompter_cfg="configs/prompter/hf-llama-3.yaml",
     system_prompt_cfg=dict(
         role="system",
         template="""

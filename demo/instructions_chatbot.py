@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Local imports
-from prompting import PromptingStrategy
+from prompting import PromptingStrategy, SceneGraph
 
 
 class InstructionsChatbot(PromptingStrategy):
@@ -33,7 +33,7 @@ class InstructionsChatbot(PromptingStrategy):
 
         print('### User ###')
         print(self.user_prompt.template)
-        print('$scene_graph: [SceneGraph]')
+        print('$scene_graph:', self.user_prompt.get('scene_graph'))
         print('$scenario:', self.user_prompt.get('scenario'))
         print('')
 
@@ -81,7 +81,9 @@ def main(scene_graph_path):
     # Load the scene graph
     print('----------------------------------------------------------')
     print("Loading scene graph... ", end='')
-    scene_graph = json.load(open(scene_graph_path, 'r'))
+    scene_graph = json.load(open(scene_graph_path, 'r'))[-1]['content']
+    SceneGraph.parse(scene_graph).visualize('scene_graph.png')
+    exit()
     print("Done!")
 
     # Get the scenario

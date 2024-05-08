@@ -1,5 +1,5 @@
 dict(
-    prompter_cfg="configs/prompter/gpt-3.5-turbo.yaml",
+    prompter_cfg="configs/prompter/hf-llama-3.yaml",
     system_prompt_cfg=dict(
         role="system",
         template="You are a humanoid in a novel environment and you want to perform a specific task or complete a scenario. You have access to an omniscient narrator who can provide you with step-by-step instructions for completing the task, and who you can ask questions about how to complete the task. You can also ask the narrator follow-up questions about the instructions they provide. Please follow the instructions and ask the narrator any questions you have about the instructions or the scenario until the task is complete. When you are done, please provide the final instructions you followed to complete the scenario and end the conversation. Please only respond with a single sentence at a time, which can be a question or 'done'.",

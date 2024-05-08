@@ -5,3 +5,5 @@ python-dotenv==1.0.0
 requests==2.31.0
 trimesh
 tqdm
+open3d==0.18.0 
+matplotlib==3.8.2

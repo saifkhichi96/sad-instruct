@@ -2,18 +2,21 @@ import os
 from typing import Dict, Union
 
 from .base_prompter import BasePrompter
+from .groq_prompter import GroqPrompter
 from .huggingface_prompter import HuggingFacePrompter
 from .openai_prompter import OpenAIPrompter
 
 
 __all__ = [
     "BasePrompter",
+    "GroqPrompter",
     "HuggingFacePrompter",
     "OpenAIPrompter",
 ]
 
 __dict__ = {
     "BasePrompter": BasePrompter,
+    "GroqPrompter": GroqPrompter,
     "HuggingFacePrompter": HuggingFacePrompter,
     "OpenAIPrompter": OpenAIPrompter,
 }

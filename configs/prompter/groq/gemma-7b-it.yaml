@@ -1,0 +1,7 @@
+type: GroqPrompter
+init_cfg:
+  model: 'gemma-7b-it'
+  temperature: 0.7
+  repetition_penalty: 1.2
+  top_p: 0.9
+  max_tokens: 512

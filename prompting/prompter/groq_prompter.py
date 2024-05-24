@@ -18,14 +18,14 @@ class GroqPrompter(BasePrompter):
     Requires the `GROQ_API_KEY` environment variable to be set.
 
     Args:
-        model (str): Model to use. Defaults to `mistral-8-7b-32768`.
+        model (str): Model to use. Defaults to `mixtral-8x7b-32768`.
     """
 
     CHAT_MODELS = [
         "gemma-7b-it",
         "llama3-70b-8192",
         "llama3-8b-8192",
-        "mistral-8-7b-32768",
+        "mixtral-8x7b-32768",
     ]
 
     COMPLETION_MODELS = [
@@ -33,7 +33,7 @@ class GroqPrompter(BasePrompter):
     ]
 
     def __init__(self,
-                 model: str = "gemma-7b-it",
+                 model: str = "mixtral-8x7b-32768",
                  **kwargs) -> None:
         super().__init__(**kwargs)
         api_key = os.environ.get("GROQ_API_KEY")

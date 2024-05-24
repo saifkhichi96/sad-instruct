@@ -1,5 +1,7 @@
 import argparse
 import json
+import os
+from time import strftime, gmtime
 
 # Colorama for colored terminal output
 from colorama import init, Fore, Style
@@ -24,6 +26,7 @@ class InstructionsAutobot(PromptingStrategy):
         self.user_prompt.set('instructions', instructions)
 
         self.num_iterations = num_iterations
+        self.conversation_id = strftime("%Y%m%d-%H%M%S", gmtime())
 
     def start(self):
         print('### System ###')
@@ -38,13 +41,19 @@ class InstructionsAutobot(PromptingStrategy):
 
         # Get the humanoid's response
         autobot_response = self.prompt(self.user_prompt)
+        print('### Autobot ###')
+        print(autobot_response)
 
         for i in range(self.num_iterations):
             # Send the response to the narrator
+            print('### Narrator ###')
             narrator_response = self.narrator.prompt(autobot_response)
+            print(narrator_response)
 
             # Send the narrator's response to the humanoid
+            print('### Autobot ###')
             autobot_response = self.prompt(narrator_response)
+            print(autobot_response)
 
         # Export the conversation
         print('Exporting conversation...')
@@ -55,7 +64,12 @@ class InstructionsAutobot(PromptingStrategy):
         return self.prompter.messages
 
     def export_conversation(self):
-        with open('out/conversation.txt', 'w') as f:
+        history_file = f'out/conversation_{self.conversation_id}.json'
+        history_dir = os.path.dirname(history_file)
+        if not os.path.exists(history_dir):
+            os.makedirs(history_dir)
+
+        with open(history_file, 'w') as f:
             history = self.message_history
             history = json.dumps(history, indent=4)
             f.write(history)
@@ -81,7 +95,7 @@ class Narrator(PromptingStrategy):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--scene_graph', type=str,
+    parser.add_argument('--scene_graph', type=str, required=True,
                         help='Path to the scene graph JSON file')
     return parser.parse_args()
 
@@ -90,7 +104,7 @@ def main(scene_graph_path):
     # Load the scene graph
     print('----------------------------------------------------------')
     print("Loading scene graph... ", end='')
-    scene_graph = json.load(open(scene_graph_path, 'r'))[-1]['content']
+    scene_graph = json.load(open(scene_graph_path, 'r')) #[-1]['content']
     print("Done!")
 
     # Get the scenario

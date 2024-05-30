@@ -25,8 +25,10 @@ class PromptingStrategy:
             self.prompter.system_prompt = system_prompt
 
         # Build the user prompt
-        user_prompt_cfg = init_cfg['user_prompt_cfg']
-        self.user_prompt = PromptBuilder.from_cfg(user_prompt_cfg)
+        user_prompt_cfg = init_cfg.get('user_prompt_cfg', None)
+        self.user_prompt = None
+        if user_prompt_cfg:
+            self.user_prompt = PromptBuilder.from_cfg(user_prompt_cfg)
 
     def prompt(self, prompt: Union[Prompt, str], role: str = 'user') -> str:
         if isinstance(prompt, str):

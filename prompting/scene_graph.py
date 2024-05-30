@@ -37,6 +37,8 @@ class SceneGraph:
         if self._objects is not None:
             for obj in self._objects:
                 label = obj['label'].replace(' ', '-')
+                instance_id = obj['id']
+                label = f"{label}-{instance_id}"
                 attributes = []
                 for group, attrs in obj['attributes'].items():
                     a = [attr.replace(' ', '-') for attr in attrs]
@@ -147,8 +149,6 @@ class SceneGraph:
         plt.tight_layout()
         plt.savefig(save_path)
         plt.close()
-
-        
 
     @staticmethod
     def parse(sentence):

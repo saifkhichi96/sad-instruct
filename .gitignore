@@ -163,3 +163,5 @@ cython_debug/
 # Local files
 data/
 out/
+scene_graph*.png
+screenlog.*

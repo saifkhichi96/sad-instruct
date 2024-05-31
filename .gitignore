@@ -165,3 +165,4 @@ data/
 out/
 scene_graph*.png
 screenlog.*
+*.sqsh

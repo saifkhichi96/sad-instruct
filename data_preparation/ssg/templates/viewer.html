@@ -1,0 +1,275 @@
+{% extends "_layouts/base.html" %}
+
+{% block title %}SID Dataset Viewer{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    .container {
+        width: 100%;
+        height: 100vh;
+        padding: 16px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .column-left {
+        width: 60%;
+        height: 100%;
+        overflow-y: auto;
+        padding-right: 16px;
+        box-sizing: border-box;
+    }
+
+    .column-right {
+        width: 40%;
+        height: 100%;
+        overflow-y: auto;
+        padding-left: 16px;
+        box-sizing: border-box;
+    }
+
+    @media screen and (max-width: 768px) {
+        .container {
+            display: block;
+            overflow: auto;
+        }
+
+        .column-left,
+        .column-right {
+            width: 100%;
+            height: auto;
+        }
+        
+    }
+
+    /* Hide scrollbars */
+    .column-left::-webkit-scrollbar,
+    .column-right::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 16px;
+        background-color: #f9f9f9;
+        margin-bottom: 10px;
+        padding: 16px;
+        word-wrap: break-word;
+    }
+
+    .card.dotted {
+        background-color: transparent;
+        border-style: dashed;
+    }
+
+    .card p {
+        margin: 0;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message .content {
+        max-width: 80%;
+        padding: 10px;
+        border-radius: 15px;
+    }
+
+    .message.system .content {
+        background-color: #e0e0e0;
+        align-self: flex-start;
+    }
+
+    .message.assistant .content {
+        background-color: #d1f1ff;
+        align-self: flex-start;
+    }
+
+    .message.user .content {
+        background-color: #dcf8c6;
+        align-self: flex-end;
+    }
+
+    .navigation-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .navigation-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .navigation-buttons button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+    }
+
+    .navigation-buttons button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .navigation-buttons button i {
+        font-size: 20px;
+    }
+
+    .navigation-buttons button:hover:not(:disabled) {
+        background-color: #0056b3;
+    }
+
+    .sample-info {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .scene-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        min-height: 200px;
+    }
+
+    .scene-graph img {
+        min-width: 200px;
+        max-width: 200px;
+        height: auto;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    .scene-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .scene-details b {
+        font-size: 1.2em;
+        margin-bottom: 8px;
+    }
+
+    .scene-details p {
+        margin: 0;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="column-left">
+        <h1>Situational Instructions Dataset</h1>
+        <div class="navigation-container">
+            <p class="sample-info">Showing <span id="sampleIndex"></span> of {{ data_size }} | Use arrow keys to navigate</p>
+            <div class="navigation-buttons">
+                <button id="prevBtn" onclick="navigate(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+                <button id="nextBtn" onclick="navigate(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div id="sampleViewer">
+
+        </div>
+    </div>
+
+    <div class="column-right">
+        <div id="conversationViewer" class="card dotted">
+            <!-- Sample content will be injected here by JavaScript -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Example dataset samples (replace with your actual data)
+    const samples = {{ instructions | tojson }};
+
+    let currentIndex = 0;
+
+    function showSample(index) {
+        const sampleViewer = document.getElementById('sampleViewer');
+        const conversationViewer = document.getElementById('conversationViewer');
+        const sample = samples[index];
+
+        // Filter out system messages
+        let conversation = sample.conversation.filter(msg => msg.role !== 'system');
+        conversation = conversation.map(msg => {
+            return `<div class="message ${msg.role}">
+                        <div class="content">
+                            <b>${msg.role === 'user' ? 'Robot' : 'Oracle'}:</b> ${msg.content}
+                        </div>
+                    </div>`;
+        }).join('');
+
+        sampleViewer.innerHTML = `
+            <div class="scene-container mb-4">
+                <div class"scene-graph">
+                    <img src="${sample.sg}" alt="Scene Graph" style="max-width: 200px; height: auto;">
+                </div>
+                <div class="scene-details">
+                    <p><b>Scene:</b> ${sample.scan_id}</p>
+                    <p><b>Task:</b> ${sample.scenario}</p>
+                </div>
+            </div>
+
+            <div class="card p-4">
+                <h2>Instructions</h2>
+                <ol>${sample.instructions.map(instruction => `<li>${instruction}</li>`).join('')}</ol>
+            </div>
+        `;
+
+        conversationViewer.innerHTML = `
+            <h2>Conversation</h2>
+            <div>${conversation}</div>
+        `;
+        document.getElementById('prevBtn').disabled = (index === 0);
+        document.getElementById('nextBtn').disabled = (index === samples.length - 1);
+        document.getElementById('sampleIndex').innerText = index + 1;
+    }
+
+    function navigate(direction) {
+        currentIndex += direction;
+        if (currentIndex < 0) currentIndex = 0;
+        if (currentIndex >= samples.length) currentIndex = samples.length - 1;
+        showSample(currentIndex);
+    }
+
+    // Allow navigation using arrow keys
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            navigate(-1);
+        } else if (event.key === 'ArrowRight') {
+            navigate(1);
+        }
+    });
+
+    // Initialize the viewer with the first sample
+    document.addEventListener('DOMContentLoaded', () => {
+        showSample(currentIndex);
+    });
+</script>
+{% endblock %}

@@ -43,12 +43,12 @@ class GroqPrompter(BasePrompter):
         self.client = OpenAI(
             max_retries=self.max_retries,
             timeout=self.timeout,
-            base_url="https://api.groq.com/openai/v1",
+            base_url="http://localhost:8000/v1",
             api_key=api_key,
         )
 
-        assert model in self.CHAT_MODELS + self.COMPLETION_MODELS, \
-            f"Model {model} not supported. Please choose one of {self.CHAT_MODELS + self.COMPLETION_MODELS}"
+        # assert model in self.CHAT_MODELS + self.COMPLETION_MODELS, \
+        #     f"Model {model} not supported. Please choose one of {self.CHAT_MODELS + self.COMPLETION_MODELS}"
 
         self.model = model
         self.system_prompt = None
@@ -137,13 +137,14 @@ class GroqPrompter(BasePrompter):
         return responses[0]
 
     def _ask(self, prompt: Prompt) -> str:
-        if self.model in self.CHAT_MODELS:
-            return self._ask_chat(prompt)
-        elif self.model in self.COMPLETION_MODELS:
-            return self._ask_completion(prompt)
-        else:
-            # Should never happen because of the assert in __init__
-            raise RuntimeError(f"Model {self.model} not supported.")
+        return self._ask_chat(prompt)
+        # if self.model in self.CHAT_MODELS:
+        #     return self._ask_chat(prompt)
+        # elif self.model in self.COMPLETION_MODELS:
+        #     return self._ask_completion(prompt)
+        # else:
+        #     # Should never happen because of the assert in __init__
+        #     raise RuntimeError(f"Model {self.model} not supported.")
 
     def prompt(self, prompt: Prompt) -> List[str]:
         # OpenAI API handles retries internally, so we don't need to

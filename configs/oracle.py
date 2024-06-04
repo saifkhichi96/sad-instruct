@@ -2,7 +2,7 @@ dict(
     prompter_cfg=dict(
         type="GroqPrompter",
         init_cfg=dict(
-            model='mixtral-8x7b-32768',
+            model='NousResearch/Meta-Llama-3-8B-Instruct', #'mixtral-8x7b-32768',
             temperature=0.7,
             repetition_penalty=1.2,
             max_tokens=512,

@@ -133,14 +133,15 @@ The annotations were created through a combination of multiple LLM agents with s
 **BibTeX:**
 
 ```bibtex
-@InProceedings{huggingface:dataset,
-    title = {Situational Instructions Database (SID)},
+@inproceedings{khan2024situational,
+    title={Situational Instructions Database: Task Guidance in Dynamic Environments},
     author={Khan, Muhammad Saif Ullah and Sinha, Sankalp and Afzal, Muhammad Zeshan and Stricker, Didier},
+    booktitle={OpenReview},
     year={2024}
 }
 ```
 
 **APA:**
 
-Khan, M. S. U., Sinha, S., Afzal, M. Z., & Stricker, D. (2024). Situational Instructions Database (SID).
+Khan, M. S. U., Sinha, S., Afzal, M. Z., & Stricker, D. (2024). Situational Instructions Database: Task Guidance in Dynamic Environments. *OpenReview*.
 

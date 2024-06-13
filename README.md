@@ -25,18 +25,10 @@ We provide the Croissant 🥐 metadata for SID [here](croissant.json).
  If you find the dataset useful, please cite the following papers:
 
 ```bibtex
-@inproceedings{khan2021situational,
+@inproceedings{khan2024situational,
     title={Situational Instructions Database: Task Guidance in Dynamic Environments},
     author={Khan, Muhammad Saif Ullah and Sinha, Sankalp and Afzal, Muhammad Zeshan and Stricker, Didier},
     booktitle={OpenReview},
-    year={2024}
-}
-```
-
-```bibtex
-@InProceedings{huggingface:dataset,
-    title = {Situational Instructions Database (SID)},
-    author={Khan, Muhammad Saif Ullah and Sinha, Sankalp and Afzal, Muhammad Zeshan and Stricker, Didier},
     year={2024}
 }
 ```

@@ -35,4 +35,4 @@ We provide the Croissant 🥐 metadata for SID [here](croissant.json).
 
 ## License
 
-The dataset is licensed under [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/). By using the dataset, you agree to the terms of the license.
+The dataset is licensed under [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/deed.en). By using the dataset, you agree to the terms of the license.

@@ -1,8 +1,4 @@
-# Situational Instructions Database (SID)
-
-Official repository of the Situational Instructions Database (SID) project.
-
-## Dataset Details
+# Official Repository of Situational Instructions Database (SID)
 
 Situational Instructions Database (SID) is a dataset for dynamic task guidance. It contains situationally-aware
 instructions for performing a wide range of everyday tasks or completing scenarios in 3D environments. The dataset

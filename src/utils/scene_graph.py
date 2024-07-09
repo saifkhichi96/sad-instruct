@@ -119,7 +119,6 @@ class SceneGraph:
             plt.title(title)
         else:
             plt.figure(figsize=(10, 10))
-            plt.title(title)
 
         # Layout the graph
         pos = nx.spring_layout(G)

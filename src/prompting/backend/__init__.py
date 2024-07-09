@@ -1,28 +1,28 @@
 import os
 from typing import Dict, Union
 
-from .base_prompter import BasePrompter
-from .groq_prompter import GroqPrompter
-from .huggingface_prompter import HuggingFacePrompter
-from .openai_prompter import OpenAIPrompter
+from .base_backend import BaseBackend
+from .groq import GroqBackend
+from .huggingface import HuggingFaceBackend
+from .openai import OpenAIBackend
 
 
 __all__ = [
-    "BasePrompter",
-    "GroqPrompter",
-    "HuggingFacePrompter",
-    "OpenAIPrompter",
+    "BaseBackend",
+    "GroqBackend",
+    "HuggingFaceBackend",
+    "OpenAIBackend",
 ]
 
 __dict__ = {
-    "BasePrompter": BasePrompter,
-    "GroqPrompter": GroqPrompter,
-    "HuggingFacePrompter": HuggingFacePrompter,
-    "OpenAIPrompter": OpenAIPrompter,
+    "BaseBackend": BaseBackend,
+    "GroqBackend": GroqBackend,
+    "HuggingFaceBackend": HuggingFaceBackend,
+    "OpenAIBackend": OpenAIBackend,
 }
 
 
-def build_prompter(type: str, init_cfg: Dict, **kwargs) -> BasePrompter:
+def build_prompter(type: str, init_cfg: Dict, **kwargs) -> BaseBackend:
     """Initialize a prompter.
 
     Args:
@@ -52,7 +52,7 @@ def build_prompter(type: str, init_cfg: Dict, **kwargs) -> BasePrompter:
     return prompter
 
 
-def build_prompter_from_cfg(cfg: Union[Dict, str]) -> BasePrompter:
+def build_llm_from_cfg(cfg: Union[Dict, str]) -> BaseBackend:
     """Initialize a prompter from a configuration dictionary.
 
     Args:

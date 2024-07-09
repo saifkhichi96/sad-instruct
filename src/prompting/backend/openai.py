@@ -8,10 +8,10 @@ from openai import OpenAI
 
 # Local imports
 from ..prompt import Prompt
-from .base_prompter import BasePrompter
+from .base_backend import BaseBackend
 
 
-class OpenAIPrompter(BasePrompter):
+class OpenAIBackend(BaseBackend):
     """ Prompter for OpenAI's LLM API.
 
     Requires the `OPENAI_API_KEY` environment variable to be set. See the

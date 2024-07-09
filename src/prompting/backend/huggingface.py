@@ -11,10 +11,10 @@ from requests import request
 
 # Local imports
 from ..prompt import Prompt
-from .base_prompter import BasePrompter
+from .base_backend import BaseBackend
 
 
-class HuggingFacePrompter(BasePrompter):
+class HuggingFaceBackend(BaseBackend):
     """ Prompter for HuggingFace's LLM API.
 
     Requires the `HUGGINGFACE_API_KEY` environment variable to be set. See the HuggingFace

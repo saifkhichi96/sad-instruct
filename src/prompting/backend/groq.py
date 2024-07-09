@@ -9,10 +9,10 @@ from openai import OpenAI
 
 # Local imports
 from ..prompt import Prompt
-from .base_prompter import BasePrompter
+from .base_backend import BaseBackend
 
 
-class GroqPrompter(BasePrompter):
+class GroqBackend(BaseBackend):
     """ Prompter for Groq's API.
 
     Requires the `GROQ_API_KEY` environment variable to be set.

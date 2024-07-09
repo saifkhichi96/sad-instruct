@@ -6,7 +6,7 @@ from typing import List, Optional
 from ..prompt import Prompt
 
 
-class BasePrompter:
+class BaseBackend:
     """ Base class for LLM prompters.
 
     Args:

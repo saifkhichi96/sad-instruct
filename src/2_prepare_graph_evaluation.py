@@ -1,13 +1,8 @@
 import argparse
 import json
 import os
-import logging
 
 from tqdm import tqdm
-
-
-logger = logging.getLogger('sid')
-logger.setLevel(logging.INFO)
 
 
 def parse_args():
@@ -24,27 +19,27 @@ def main():
     # Check if the objects file exists
     objects_file = os.path.join(args.data_dir, "objects.json")
     if not os.path.exists(objects_file):
-        logger.error(f"File not found: {objects_file}")
+        print(f"File not found: {objects_file}")
         return
 
     # Check if the scenarios file exists
     scenarios_file = os.path.join(args.data_dir, "scenarios.json")
     if not os.path.exists(scenarios_file):
-        logger.error(f"File not found: {scenarios_file}")
+        print(f"File not found: {scenarios_file}")
         return
 
     # Load the 3DSSG dataset
     with open(objects_file, 'r') as f:
         objects = json.load(f)['scans']
-        logger.info(f"Loaded {len(objects)} scans from {objects_file}")
+        print(f"Loaded {len(objects)} scans from {objects_file}")
 
     with open(scenarios_file, 'r') as f:
         scenarios = json.load(f)['scans']
-        logger.info(f"Loaded {len(scenarios)} scans from {scenarios_file}")
+        print(f"Loaded {len(scenarios)} scans from {scenarios_file}")
 
     # Define save path
     feedback_file = os.path.join(args.data_dir, "feedback.json")
-    logger.info(f"Saving feedback data to {feedback_file}")
+    print(f"Saving feedback data to {feedback_file}")
 
     # Build an index
     objects_index = {item['scan']: item for item in objects}

@@ -3,20 +3,21 @@ import os
 import time
 from time import strftime, gmtime
 
+from colorama import init, Fore
+from dotenv import load_dotenv
+from openai import RateLimitError
 from tqdm import tqdm
 
-from openai import RateLimitError
+# Local imports
+from prompting import LLM, Prompt
+from utils import SceneGraph
+
 
 # Colorama for colored terminal output
-from colorama import init, Fore
 init(autoreset=True)
 
 # Load environment variables
-from dotenv import load_dotenv
 load_dotenv()
-
-# Local imports
-from prompting import PromptingStrategy, Prompt, SceneGraph
 
 
 class InstructionsGenerator:
@@ -27,7 +28,7 @@ class InstructionsGenerator:
         # Create the LLM Agents
         self.robot = Robot(scenario)
         self.oracle = Oracle(scene_graph, scenario)
-        self.summarizer = PromptingStrategy(init_cfg='configs/summarizer.py')
+        self.summarizer = LLM(init_cfg='configs/summarizer.py')
 
         # Set output directory
         self.output_dir = output_dir
@@ -39,7 +40,7 @@ class InstructionsGenerator:
         self.history = [
             {
                 'role': 'system',
-                'content': self.oracle.prompter.system_prompt
+                'content': self.oracle.backend.system_prompt
             },
             {
                 'role': 'user',
@@ -113,7 +114,7 @@ class InstructionsGenerator:
 
     @property
     def message_history(self):
-        return self.prompter.messages
+        return self.backend.messages
 
     def export_conversation(self, summary):
         history_file = f'{self.output_dir}/conversation_{self.conversation_id}.json'
@@ -131,7 +132,7 @@ class InstructionsGenerator:
             f.write(summary)
 
 
-class Robot(PromptingStrategy):
+class Robot(LLM):
     def __init__(self, scenario):
         super().__init__(init_cfg='configs/robot.py')
         self.user_prompt.set('scenario', scenario)
@@ -140,7 +141,7 @@ class Robot(PromptingStrategy):
         self.user_prompt.set('instructions', instructions)
 
 
-class Oracle(PromptingStrategy):
+class Oracle(LLM):
     def __init__(self, scene_graph, scenario):
         super().__init__(init_cfg='configs/oracle.py')
         self.user_prompt.set('scene_graph', f"{{{scene_graph}}}")
@@ -162,11 +163,11 @@ def main():
     # Load the dataset
     print('----------------------------------------------------------')
     print("Loading dataset... ", end='')
-    dataset = json.load(open('data/3DSSG/scenarios_correct_train.json', 'r'))
+    dataset = json.load(open('data/3DSSG/raw/scenarios_refined.json', 'r'))['scans']
     num_samples = len(dataset)
 
     # Load existing instructions if any
-    save_path = 'data/3DSSG/instructions_correct.json'
+    save_path = 'data/3DSSG/instructions_lq.json'
     start_idx = 0
     if os.path.exists(save_path):
         instructions = json.load(open(save_path, 'r'))
@@ -194,21 +195,21 @@ def main():
 
     # Iterate over the dataset and separate generated and non-generated instructions
     for item in dataset:
-        key = f"{item['scan_id']}-{item['scenario_description']}"
+        key = f"{item['scan']}-{item['scenario']}"
         if key in index:
             generated_instructions.append(item)
         else:
             non_generated_instructions.append(item)
 
     # Combine the lists, putting generated instructions first
-    non_generated_instructions = sorted(non_generated_instructions, key=lambda x: x['scan_id'])
+    non_generated_instructions = sorted(non_generated_instructions, key=lambda x: x['scan'])
     dataset = generated_instructions + non_generated_instructions
 
     # Iterate over the dataset
     num_skipped = 0
-    for idx, item in enumerate(tqdm(dataset[start_idx:], desc='Generating instructions')):
-        scan_id = item['scan_id']
-        scenario = item['scenario_description']
+    for item in tqdm(dataset[start_idx:], desc='Generating instructions'):
+        scan_id = item['scan']
+        scenario = item['scenario']
         key = f"{scan_id}-{scenario}"
         if key in index:
             continue
@@ -223,7 +224,7 @@ def main():
             scene_graph,
             scenario, 
             num_iterations=3,
-            output_dir='out/3DSSG_Correct',
+            output_dir='out/3DSSG_Correct_LQ_Filtered',
             verbose=False
         )
         attempt = True
@@ -233,7 +234,7 @@ def main():
                 summary, history = generator.generate()
                 attempt = False
                 instructions.append({
-                    'scan_id': item['scan_id'],
+                    'scan_id': scan_id,
                     'scenario': scenario,
                     'instructions': summary,
                     'conversation': history
@@ -244,9 +245,9 @@ def main():
                     attempt = False
                     print(f"Rate limit exceeded. Skipping {key}...")
                     num_skipped += 1
-                    if num_skipped > 10:
-                        print("Too many rate limit errors. Exiting...")
-                        break
+                    # if num_skipped > 10:
+                    #     print("Too many rate limit errors. Exiting...")
+                    #     exit()
                 else:
                     wait_time = 30
                     print(f"Rate limit exceeded. Waiting for {wait_time} seconds before retrying...")
@@ -255,9 +256,9 @@ def main():
                 print(f"Error generating instructions for {key}: {e}")
                 attempt = False
                 num_skipped += 1
-                if num_skipped > 10:
-                    print("Too many errors. Exiting...")
-                    break
+                # if num_skipped > 10:
+                #     print("Too many errors. Exiting...")
+                #     exit()
             
         # Save the instructions at each 100th iteration
         with open(save_path, 'w') as f:

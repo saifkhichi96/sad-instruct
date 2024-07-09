@@ -1,12 +1,14 @@
 import json
 import random
 import threading
+
 from flask import Flask, render_template, redirect, request, url_for
 
 
+# Create a new Flask app
 app = Flask(__name__)
 
-
+# Create a lock for thread safety
 lock = threading.Lock()
 
 
@@ -114,5 +116,5 @@ if __name__ == '__main__':
     app.run(
         host=args.host,
         port=args.port,
-        debug=True
+        debug=False
     )

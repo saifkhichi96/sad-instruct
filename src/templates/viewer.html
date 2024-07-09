@@ -17,7 +17,7 @@
     }
 
     .column-left {
-        width: 60%;
+        width: 40%;
         height: 100%;
         overflow-y: auto;
         padding-right: 16px;
@@ -25,7 +25,7 @@
     }
 
     .column-right {
-        width: 40%;
+        width: 60%;
         height: 100%;
         overflow-y: auto;
         padding-left: 16px;
@@ -54,21 +54,74 @@
     }
 
     .card {
-        border: 1px solid #ccc;
+        border: 1px solid #0080F0;
         border-radius: 16px;
-        background-color: #f9f9f9;
         margin-bottom: 10px;
         padding: 16px;
         word-wrap: break-word;
     }
 
     .card.dotted {
-        background-color: transparent;
-        border-style: dashed;
+        border: none;
+        background-color: #F5F5F5;
     }
 
     .card p {
         margin: 0;
+    }
+
+    .instructions {
+        padding: 0;
+    }
+
+    .instructions ol {
+        list-style-position: inside;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .instructions li {
+        padding: 0 8px;
+    }
+
+    .instructions li::after {
+        content: "";
+        display: block;
+        height: 1px;
+        width: calc(100% + 16px);
+        background-color: #0080F0;
+        margin-top: 4px;
+        margin: 0 -8px;
+    }
+
+    .instructions li:last-child::after {
+        display: none;
+    }
+
+    .scenario {
+        background-color: #0080F0;
+        border-radius: 16px;
+        font-weight: bold;
+        margin-bottom: 32px;
+        text-align: center;
+        color: white;
+        padding: 8px;
+    }
+
+    .item {
+        display: inline-block;
+        padding: 2px 8px;
+        background-color: #F5F5F5;
+        border: 1px solid #ccc;
+        border-radius: 16px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+    }
+
+    .selected.item {
+        background-color: #3700CC;
+        color: white;
     }
 
     .message {
@@ -92,35 +145,33 @@
     }
 
     .message.assistant .content {
-        background-color: #d1f1ff;
+        background-color: #DAE8FC;
         align-self: flex-start;
     }
 
     .message.user .content {
-        background-color: #dcf8c6;
+        background-color: #E6FFCC;
         align-self: flex-end;
     }
 
     .navigation-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         margin-bottom: 20px;
     }
 
     .navigation-buttons {
+        width: 100%;
         display: flex;
         gap: 10px;
     }
 
     .navigation-buttons button {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px 16px;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 8px 12px;
         border: none;
         border-radius: 50%;
-        background-color: #007bff;
+        background-color: #3700CC;
         color: white;
         cursor: pointer;
         transition: background-color 0.3s ease;
@@ -133,11 +184,11 @@
     }
 
     .navigation-buttons button i {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .navigation-buttons button:hover:not(:disabled) {
-        background-color: #0056b3;
+        background-color: #1e0070;
     }
 
     .sample-info {
@@ -146,18 +197,28 @@
     }
 
     .scene-container {
+        border: 1px solid #3700CC;
+        border-radius: 16px;
+        border-style: dashed;
+        background-color: #F7F0FF;
+        padding: 16px;
         display: flex;
         align-items: flex-start;
         gap: 16px;
         min-height: 200px;
     }
 
-    .scene-graph img {
+    .scene-graph-img {
         min-width: 200px;
         max-width: 200px;
         height: auto;
-        border-radius: 8px;
-        border: 1px solid #ccc;
+        border-radius: 16px;
+        border: 1px solid #3700CC;
+    }
+
+    .scene-graph-img:hover {
+        cursor: pointer;
+        filter: brightness(0.9);
     }
 
     .scene-details {
@@ -175,31 +236,59 @@
         margin: 0;
     }
 
+    #dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 999;
+        display: none;
+    }
+
+    #dialog-content {
+        position: relative;
+        width: calc(100vh / 2);
+        height: calc(100vh / 2);
+        top: 25%;
+        left: calc(100vw / 2 - 100vh / 4);
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="column-left">
-        <h1>Situational Instructions Dataset</h1>
+        <h1>SID Viewer</h1>
+        <div id="conversationViewer">
+            <!-- Sample content will be injected here by JavaScript -->
+        </div>
+
         <div class="navigation-container">
-            <p class="sample-info">Showing <span id="sampleIndex"></span> of {{ data_size }} | Use arrow keys to navigate</p>
+            <p class="sample-info">Showing <span id="sampleIndex"></span> of {{ data_size }}* | Use arrow keys to navigate</p>
             <div class="navigation-buttons">
                 <button id="prevBtn" onclick="navigate(-1)" disabled><i class="fas fa-chevron-left"></i></button>
                 <button id="nextBtn" onclick="navigate(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
+        <p>* Only 100 random samples are shown in this demo.</p>
+    </div>
 
+    <div class="column-right">
         <div id="sampleViewer">
 
         </div>
     </div>
+</div>
 
-    <div class="column-right">
-        <div id="conversationViewer" class="card dotted">
-            <!-- Sample content will be injected here by JavaScript -->
-        </div>
-    </div>
+<div id="dialog">
+    <div id="dialog-content"></div>
 </div>
 {% endblock %}
 
@@ -220,36 +309,68 @@
         conversation = conversation.map(msg => {
             return `<div class="message ${msg.role}">
                         <div class="content">
-                            <b>${msg.role === 'user' ? 'Robot' : 'Oracle'}:</b> ${msg.content}
+                            <b>${msg.role === 'user' ? 'H' : 'O'}:</b> ${msg.content}
                         </div>
                     </div>`;
         }).join('');
 
+        const items = sample.items.map(item => {
+            if (item.selected) {
+                return `<span class="selected item">${item.label}</span>`;
+            } else {
+                return `<span class="item">${item.label}</span>`;
+            }
+        }).join('');
         sampleViewer.innerHTML = `
             <div class="scene-container mb-4">
                 <div class"scene-graph">
-                    <img src="${sample.sg}" alt="Scene Graph" style="max-width: 200px; height: auto;">
+                    <img class="scene-graph-img" src="${sample.sg}" alt="Scene Graph" />
                 </div>
                 <div class="scene-details">
-                    <p><b>Scene:</b> ${sample.scan_id}</p>
-                    <p><b>Task:</b> ${sample.scenario}</p>
+                    <p>${items}</p>
                 </div>
             </div>
 
-            <div class="card p-4">
-                <h2>Instructions</h2>
-                <ol>${sample.instructions.map(instruction => `<li>${instruction}</li>`).join('')}</ol>
-            </div>
+            <div class="card dotted">${conversation}</div>
         `;
 
         conversationViewer.innerHTML = `
-            <h2>Conversation</h2>
-            <div>${conversation}</div>
+            <div class="scenario">${sample.scenario}</div>
+            <div class="instructions card">
+                <ol>${sample.instructions.map(instruction => `<li>${instruction}</li>`).join('')}</ol>
+            </div>
+            <p>
+                3RScan Scene ID: <b> ${sample.scan_id} </b> 
+                <i class="fas fa-external-link-alt" style="cursor: pointer;" onclick="window.open('https://github.com/WaldJohannaU/3RScan?tab=readme-ov-file#data-formats', '_blank')"></i>
+            </p>
         `;
         document.getElementById('prevBtn').disabled = (index === 0);
         document.getElementById('nextBtn').disabled = (index === samples.length - 1);
         document.getElementById('sampleIndex').innerText = index + 1;
     }
+
+    function previewSceneGraph(index) {
+        const sample = samples[index];
+        const sceneGraphImg = sample.sg;
+        
+        // Open a dialog with the scene graph image
+        const dialog = document.getElementById('dialog');
+        const dialogContent = document.getElementById('dialog-content');
+        dialogContent.innerHTML = `<img src="${sceneGraphImg}" alt="Scene Graph" style="width: auto; height: 100%; margin: auto; border-radius: 16px;">`;
+        dialog.style.display = 'block';
+
+        // Close the dialog when clicked outside the image
+        dialog.addEventListener('click', (event) => {
+            dialog.style.display = 'none';
+        });
+    }
+
+    // Attach event listener to scene graph images
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('scene-graph-img')) {
+            previewSceneGraph(currentIndex);
+        }
+    });
 
     function navigate(direction) {
         currentIndex += direction;

@@ -6,8 +6,8 @@ random.seed(42)
 import tiktoken
 from tqdm import tqdm
 
-from prompting import SceneGraph
-from utils import load_3dssg
+# Local imports
+from utils import SceneGraph, load_3dssg
 
 
 def create_sample(messages):
@@ -180,7 +180,7 @@ def jsonl2gemma(infile, outfile):
     converted = 'prompt\n'
     for d in data:
         messages = d['messages']
-        content = ''
+        content = '"<bos>'
         for m in messages:
             text = m['content']
             text = text.replace('"', '""')
@@ -189,7 +189,8 @@ def jsonl2gemma(infile, outfile):
             if role != 'user':
                 role = 'model'
 
-            content += f'"<start_of_turn>{role}\n{text}<end_of_turn>"\n'
+            content += f'<start_of_turn>{role}\n{text}<end_of_turn>\n'
+        content += '<eos>"'
         converted += f'{content}\n'
 
     # Write to file
@@ -223,11 +224,11 @@ def create_sid_instruct(sid_path):
     print(f"Train scans: {len(train_scans)}")
     print(f"Test scans: {len(test_scans)}")
 
-    # Save splits info.
-    with open(os.path.join(sid_path, 'sid_train_scans.txt'), 'w') as f:
-        f.write('\n'.join(train_scans))
-    with open(os.path.join(sid_path, 'sid_test_scans.txt'), 'w') as f:
-        f.write('\n'.join(test_scans))
+    # # Save splits info.
+    # with open(os.path.join(sid_path, 'sid_train_scans.txt'), 'w') as f:
+    #     f.write('\n'.join(train_scans))
+    # with open(os.path.join(sid_path, 'sid_test_scans.txt'), 'w') as f:
+    #     f.write('\n'.join(test_scans))
 
     print(f"Loaded {len(ssg)} scene graphs.")
     with open(scenarios_file, 'r') as f:
@@ -259,8 +260,8 @@ def create_sid_instruct(sid_path):
         scene_graph = ssg[scan_id]
         pruned_scene_graph = scenarios[(scan_id, scenario)]
 
-        samples.append(create_scene_graph_pruning(scene_graph, scenario, pruned_scene_graph))
-        samples.extend(create_scenario_objects(scene_graph, scenario, pruned_scene_graph))
+        # samples.append(create_scene_graph_pruning(scene_graph, scenario, pruned_scene_graph))
+        # samples.extend(create_scenario_objects(scene_graph, scenario, pruned_scene_graph))
 
         instruct_ = instruct['instructions']
         s, instruct_ = create_instruction_sample(scene_graph, scenario, pruned_scene_graph, instruct_)
@@ -298,35 +299,35 @@ def create_sid_instruct(sid_path):
 
     # Save samples.
     print(f"Writing train samples: {len(train_samples)}")
-    with open(os.path.join(sid_path, 'sid_instruct_train.json'), 'w') as f:
+    with open(os.path.join(sid_path, 'sid_instruct_train2.json'), 'w') as f:
         json.dump(train_samples, f)
     print(f"Writing test samples: {len(test_samples)}")
-    with open(os.path.join(sid_path, 'sid_instruct_test.json'), 'w') as f:
+    with open(os.path.join(sid_path, 'sid_instruct_test2.json'), 'w') as f:
         json.dump(test_samples, f)
 
     # Write as JSONL.
     print("Writing JSONL files for fine-tuning GPT...")
-    with open(os.path.join(sid_path, 'sid_instruct_train.jsonl'), 'w') as f:
+    with open(os.path.join(sid_path, 'sid_instruct_train2.jsonl'), 'w') as f:
         for sample in train_samples:
             f.write(json.dumps(sample) + '\n')
-    with open(os.path.join(sid_path, 'sid_instruct_test.jsonl'), 'w') as f:
+    with open(os.path.join(sid_path, 'sid_instruct_test2.jsonl'), 'w') as f:
         for sample in test_samples:
             f.write(json.dumps(sample) + '\n')
 
     # Write as Gemma CSV.
     print("Writing CSV files for fine-tuning Gemma...")
-    jsonl2gemma(os.path.join(sid_path, 'sid_instruct_train.jsonl'), os.path.join(sid_path, 'sid_instruct_train.csv'))
-    jsonl2gemma(os.path.join(sid_path, 'sid_instruct_test.jsonl'), os.path.join(sid_path, 'sid_instruct_test.csv'))
+    jsonl2gemma(os.path.join(sid_path, 'sid_instruct_train2.jsonl'), os.path.join(sid_path, 'sid_instruct_train2.csv'))
+    jsonl2gemma(os.path.join(sid_path, 'sid_instruct_test2.jsonl'), os.path.join(sid_path, 'sid_instruct_test2.csv'))
 
     # Count tokens.
     print("Counting train tokens...")
-    in_tokens, out_tokens = count_tokens(os.path.join(sid_path, 'sid_instruct_train.json'))
+    in_tokens, out_tokens = count_tokens(os.path.join(sid_path, 'sid_instruct_train2.json'))
     print(f"Train input tokens: {in_tokens:.2f}M")
     print(f"Train output tokens: {out_tokens:.2f}M")
     print(f"Train total tokens: {in_tokens + out_tokens:.2f}M")
 
     print("Counting test tokens...")
-    in_tokens, out_tokens = count_tokens(os.path.join(sid_path, 'sid_instruct_test.json'))
+    in_tokens, out_tokens = count_tokens(os.path.join(sid_path, 'sid_instruct_test2.json'))
     print(f"Test input tokens: {in_tokens:.2f}M")
     print(f"Test output tokens: {out_tokens:.2f}M")
     print(f"Test total tokens: {in_tokens + out_tokens:.2f}M")

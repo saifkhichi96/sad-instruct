@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import logging
 
 from tqdm import tqdm
 
@@ -10,11 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Local imports
-from prompting import PromptingStrategy
-
-
-logger = logging.getLogger('sid')
-logger.setLevel(logging.INFO)
+from prompting import LLM
 
 
 def parse_response(response):
@@ -51,8 +46,8 @@ def parse_response(response):
 
 def prompt_llm(object_list):
     cfg = dict(
-        prompter_cfg=dict(
-            type='GroqPrompter',
+        backend_cfg=dict(
+            type='GroqBackend',
             init_cfg=dict(
                 model='NousResearch/Meta-Llama-3-8B-Instruct',
                 temperature=1.0,
@@ -68,7 +63,7 @@ def prompt_llm(object_list):
             template="Objects in the scene: $object_list. Generate a list of up to ten scenarios that can arise in this environment using the specified format. "
         ),
     )
-    llm = PromptingStrategy(init_cfg=cfg)
+    llm = LLM(init_cfg=cfg)
     llm.user_prompt.set('object_list', object_list)
     return llm.prompt(llm.user_prompt)
 
@@ -90,24 +85,24 @@ def main():
     # Check if the objects file exists
     objects_file = os.path.join(args.data_dir, "objects.json")
     if not os.path.exists(objects_file):
-        logger.error(f"File not found: {objects_file}")
+        print(f"File not found: {objects_file}")
         return
 
     # Load the 3DSSG dataset
     with open(objects_file, 'r') as f:
         objects = json.load(f)['scans']
-        logger.info(f"Loaded {len(objects)} scans from {objects_file}")
+        print(f"Loaded {len(objects)} scans from {objects_file}")
 
     # Define save path
     scenarios_file = os.path.join(args.data_dir, "scenarios.json")
-    logger.info(f"Saving scenarios to {scenarios_file}")
+    print(f"Saving scenarios to {scenarios_file}")
 
     # Read existing scenarios (if any)
     scenarios = []
     if os.path.exists(scenarios_file):
         with open(scenarios_file, 'r') as f:
             scenarios = json.load(f)['scans']
-    logger.info(f"Found scenarios for {len(scenarios)} scans")
+    print(f"Found scenarios for {len(scenarios)} scans")
 
     # Index the existing scenarios
     dataset = {item['scan']: item for item in scenarios}
@@ -169,9 +164,9 @@ def main():
             dataset[scan_id] = dataset.get(scan_id, {'scan': scan_id})
             dataset[scan_id]['scenarios'] = existing_data[:MIN_SCENARIOS]  # Limit to MIN_SCENARIOS
     except KeyboardInterrupt:
-        logger.info("Interrupted. Saving the progress...")
+        print("Interrupted. Saving the progress...")
     except Exception as e:
-        logger.error(f"Error: {e}. Saving the progress...")
+        print(f"Error: {e}. Saving the progress...")
 
     # Compute and print stats
     num_scans = len(dataset)

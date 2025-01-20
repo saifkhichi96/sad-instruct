@@ -1,0 +1,10 @@
+colorama==0.4.6  # used in the demos
+openai==1.7.1
+Flask
+PyYAML==6.0.1
+python-dotenv==1.0.0
+requests==2.31.0
+trimesh
+tqdm
+open3d==0.18.0 
+matplotlib==3.8.2

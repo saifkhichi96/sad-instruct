@@ -1,0 +1,396 @@
+{% extends "_layouts/base.html" %}
+
+{% block title %}SID Dataset Viewer{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    .container {
+        width: 100%;
+        height: 100vh;
+        padding: 16px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .column-left {
+        width: 40%;
+        height: 100%;
+        overflow-y: auto;
+        padding-right: 16px;
+        box-sizing: border-box;
+    }
+
+    .column-right {
+        width: 60%;
+        height: 100%;
+        overflow-y: auto;
+        padding-left: 16px;
+        box-sizing: border-box;
+    }
+
+    @media screen and (max-width: 768px) {
+        .container {
+            display: block;
+            overflow: auto;
+        }
+
+        .column-left,
+        .column-right {
+            width: 100%;
+            height: auto;
+        }
+        
+    }
+
+    /* Hide scrollbars */
+    .column-left::-webkit-scrollbar,
+    .column-right::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    .card {
+        border: 1px solid #0080F0;
+        border-radius: 16px;
+        margin-bottom: 10px;
+        padding: 16px;
+        word-wrap: break-word;
+    }
+
+    .card.dotted {
+        border: none;
+        background-color: #F5F5F5;
+    }
+
+    .card p {
+        margin: 0;
+    }
+
+    .instructions {
+        padding: 0;
+    }
+
+    .instructions ol {
+        list-style-position: inside;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    .instructions li {
+        padding: 0 8px;
+    }
+
+    .instructions li::after {
+        content: "";
+        display: block;
+        height: 1px;
+        width: calc(100% + 16px);
+        background-color: #0080F0;
+        margin-top: 4px;
+        margin: 0 -8px;
+    }
+
+    .instructions li:last-child::after {
+        display: none;
+    }
+
+    .scenario {
+        background-color: #0080F0;
+        border-radius: 16px;
+        font-weight: bold;
+        margin-bottom: 32px;
+        text-align: center;
+        color: white;
+        padding: 8px;
+    }
+
+    .item {
+        display: inline-block;
+        padding: 2px 8px;
+        background-color: #F5F5F5;
+        border: 1px solid #ccc;
+        border-radius: 16px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+    }
+
+    .selected.item {
+        background-color: #3700CC;
+        color: white;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message .content {
+        max-width: 80%;
+        padding: 10px;
+        border-radius: 15px;
+    }
+
+    .message.system .content {
+        background-color: #e0e0e0;
+        align-self: flex-start;
+    }
+
+    .message.assistant .content {
+        background-color: #DAE8FC;
+        align-self: flex-start;
+    }
+
+    .message.user .content {
+        background-color: #E6FFCC;
+        align-self: flex-end;
+    }
+
+    .navigation-container {
+        margin-bottom: 20px;
+    }
+
+    .navigation-buttons {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .navigation-buttons button {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 50%;
+        background-color: #3700CC;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+    }
+
+    .navigation-buttons button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .navigation-buttons button i {
+        font-size: 16px;
+    }
+
+    .navigation-buttons button:hover:not(:disabled) {
+        background-color: #1e0070;
+    }
+
+    .sample-info {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .scene-container {
+        border: 1px solid #3700CC;
+        border-radius: 16px;
+        border-style: dashed;
+        background-color: #F7F0FF;
+        padding: 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        min-height: 200px;
+    }
+
+    .scene-graph-img {
+        min-width: 200px;
+        max-width: 200px;
+        height: auto;
+        border-radius: 16px;
+        border: 1px solid #3700CC;
+    }
+
+    .scene-graph-img:hover {
+        cursor: pointer;
+        filter: brightness(0.9);
+    }
+
+    .scene-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .scene-details b {
+        font-size: 1.2em;
+        margin-bottom: 8px;
+    }
+
+    .scene-details p {
+        margin: 0;
+    }
+
+    #dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 999;
+        display: none;
+    }
+
+    #dialog-content {
+        position: relative;
+        width: calc(100vh / 2);
+        height: calc(100vh / 2);
+        top: 25%;
+        left: calc(100vw / 2 - 100vh / 4);
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="column-left">
+        <h1>SID Viewer</h1>
+        <div id="conversationViewer">
+            <!-- Sample content will be injected here by JavaScript -->
+        </div>
+
+        <div class="navigation-container">
+            <p class="sample-info">Showing <span id="sampleIndex"></span> of {{ data_size }}* | Use arrow keys to navigate</p>
+            <div class="navigation-buttons">
+                <button id="prevBtn" onclick="navigate(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+                <button id="nextBtn" onclick="navigate(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <p>* Only 100 random samples are shown in this demo.</p>
+    </div>
+
+    <div class="column-right">
+        <div id="sampleViewer">
+
+        </div>
+    </div>
+</div>
+
+<div id="dialog">
+    <div id="dialog-content"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Example dataset samples (replace with your actual data)
+    const samples = {{ instructions | tojson }};
+
+    let currentIndex = 0;
+
+    function showSample(index) {
+        const sampleViewer = document.getElementById('sampleViewer');
+        const conversationViewer = document.getElementById('conversationViewer');
+        const sample = samples[index];
+
+        // Filter out system messages
+        let conversation = sample.conversation.filter(msg => msg.role !== 'system');
+        conversation = conversation.map(msg => {
+            return `<div class="message ${msg.role}">
+                        <div class="content">
+                            <b>${msg.role === 'user' ? 'H' : 'O'}:</b> ${msg.content}
+                        </div>
+                    </div>`;
+        }).join('');
+
+        const items = sample.items.map(item => {
+            if (item.selected) {
+                return `<span class="selected item">${item.label}</span>`;
+            } else {
+                return `<span class="item">${item.label}</span>`;
+            }
+        }).join('');
+        sampleViewer.innerHTML = `
+            <div class="scene-container mb-4">
+                <div class"scene-graph">
+                    <img class="scene-graph-img" src="${sample.sg}" alt="Scene Graph" />
+                </div>
+                <div class="scene-details">
+                    <p>${items}</p>
+                </div>
+            </div>
+
+            <div class="card dotted">${conversation}</div>
+        `;
+
+        conversationViewer.innerHTML = `
+            <div class="scenario">${sample.scenario}</div>
+            <div class="instructions card">
+                <ol>${sample.instructions.map(instruction => `<li>${instruction}</li>`).join('')}</ol>
+            </div>
+            <p>
+                3RScan Scene ID: <b> ${sample.scan_id} </b> 
+                <i class="fas fa-external-link-alt" style="cursor: pointer;" onclick="window.open('https://github.com/WaldJohannaU/3RScan?tab=readme-ov-file#data-formats', '_blank')"></i>
+            </p>
+        `;
+        document.getElementById('prevBtn').disabled = (index === 0);
+        document.getElementById('nextBtn').disabled = (index === samples.length - 1);
+        document.getElementById('sampleIndex').innerText = index + 1;
+    }
+
+    function previewSceneGraph(index) {
+        const sample = samples[index];
+        const sceneGraphImg = sample.sg;
+        
+        // Open a dialog with the scene graph image
+        const dialog = document.getElementById('dialog');
+        const dialogContent = document.getElementById('dialog-content');
+        dialogContent.innerHTML = `<img src="${sceneGraphImg}" alt="Scene Graph" style="width: auto; height: 100%; margin: auto; border-radius: 16px;">`;
+        dialog.style.display = 'block';
+
+        // Close the dialog when clicked outside the image
+        dialog.addEventListener('click', (event) => {
+            dialog.style.display = 'none';
+        });
+    }
+
+    // Attach event listener to scene graph images
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('scene-graph-img')) {
+            previewSceneGraph(currentIndex);
+        }
+    });
+
+    function navigate(direction) {
+        currentIndex += direction;
+        if (currentIndex < 0) currentIndex = 0;
+        if (currentIndex >= samples.length) currentIndex = samples.length - 1;
+        showSample(currentIndex);
+    }
+
+    // Allow navigation using arrow keys
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            navigate(-1);
+        } else if (event.key === 'ArrowRight') {
+            navigate(1);
+        }
+    });
+
+    // Initialize the viewer with the first sample
+    document.addEventListener('DOMContentLoaded', () => {
+        showSample(currentIndex);
+    });
+</script>
+{% endblock %}

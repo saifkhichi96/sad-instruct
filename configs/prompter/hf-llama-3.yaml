@@ -1,0 +1,7 @@
+type: HuggingFacePrompter
+init_cfg:
+  model: 'meta-llama/Meta-Llama-3-8B'
+  temperature: 0.5
+  repetition_penalty: 1.2
+  top_p: 0.9
+  max_tokens: 256

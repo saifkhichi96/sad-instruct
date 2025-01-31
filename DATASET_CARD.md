@@ -2,7 +2,7 @@
 
 <!-- Provide a quick summary of the dataset. -->
 
-SID: Situational Instructions Database for dynamic task guidance in 3D environments.
+SAD: Situational Awareness Database for dynamic task guidance in 3D environments.
 
 ## Dataset Details
 

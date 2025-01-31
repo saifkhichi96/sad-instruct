@@ -1,4 +1,4 @@
-# Dataset Card for Situational Instructions Database
+# Dataset Card for Situational Awareness Database
 
 <!-- Provide a quick summary of the dataset. -->
 
@@ -10,7 +10,7 @@ SID: Situational Instructions Database for dynamic task guidance in 3D environme
 
 <!-- Provide a longer summary of what this dataset is. -->
 
-Situational Instructions Database (SID) is a dataset for dynamic task guidance. It contains situationally-aware
+Situational Awareness Database (SAD) is a dataset for dynamic task guidance. It contains situationally-aware
 instructions for performing a wide range of everyday tasks or completing scenarios in 3D environments. The dataset
 provides step-by-step instructions for these scenarios which are grounded in the context of the situation. This
 context is defined through a scenario-specific scene graph that captures the objects, their attributes, and their
@@ -25,8 +25,8 @@ instruction following, and situated dialogue.
 
 <!-- Provide the basic links for the dataset. -->
 
-- **Repository:** https://github.com/mindgarage/situational-instructions-database
-- **Paper:** [Situational Instructions Database: Task Guidance in Dynamic Environments](#)
+- **Repository:** https://github.com/saifkhichi96/sad-instruct
+- **Paper:** [SituationalLLM: Proactive Language Models with Scene Awareness for Dynamic, Contextual Task Guidance](https://arxiv.org/abs/2406.13302)
 - **Demo:** https://blog.mindgarage.de/situational-instructions-database/
 
 ## Uses
@@ -133,15 +133,18 @@ The annotations were created through a combination of multiple LLM agents with s
 **BibTeX:**
 
 ```bibtex
-@inproceedings{khan2024situational,
-    title={Situational Instructions Database: Task Guidance in Dynamic Environments},
-    author={Khan, Muhammad Saif Ullah and Sinha, Sankalp and Afzal, Muhammad Zeshan and Stricker, Didier},
-    booktitle={OpenReview},
-    year={2024}
+@misc{khan2025situational,
+    title={SituationalLLM: Proactive Language Models with Scene Awareness for Dynamic, Contextual Task Guidance}, 
+    author={Muhammad Saif Ullah Khan and Didier Stricker},
+    year={2025},
+    eprint={2406.13302},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV},
+    url={https://arxiv.org/abs/2406.13302}, 
 }
 ```
 
 **APA:**
 
-Khan, M. S. U., Sinha, S., Afzal, M. Z., & Stricker, D. (2024). Situational Instructions Database: Task Guidance in Dynamic Environments. *OpenReview*.
+Khan, M. S. U. & Stricker, D. (2025). SituationalLLM: Proactive Language Models with Scene Awareness for Dynamic, Contextual Task Guidance. arXiv preprint arXiv:2406.13302.
 

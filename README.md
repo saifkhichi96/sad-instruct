@@ -24,14 +24,17 @@ We provide the Croissant 🥐 metadata for SAD [here](croissant.json).
 
 ## Citation
 
- If you find the dataset useful, please cite the following papers:
+ If you find the dataset useful, please cite the following paper:
 
 ```bibtex
 @article{khan2025situational,
-  title={SituationalLLM: Proactive Language Models with Scene Awareness for Dynamic, Contextual Task Guidance},
-  author={Khan, Muhammad Saif Ullah and Sinha, Sankalp and Stricker, Didier and Afzal, Muhammad Zeshan},
-  journal={arXiv preprint arXiv:2406.13302},
-  year={2025}
+  author = { Khan, MSU and Afzal, MZ and Stricker, D},
+  title = {SituationalLLM: Proactive Language Models with Scene Awareness for Dynamic, Contextual Task Guidance [version 1; peer review: awaiting peer review]},
+  journal = {Open Research Europe},
+  volume = {5},
+  year = {2025},
+  number = {61},
+  doi = {10.12688/openreseurope.18551.1}
 }
 ```
 

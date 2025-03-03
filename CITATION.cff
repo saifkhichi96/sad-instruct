@@ -1,0 +1,44 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Situational Awareness Dataset for Instruct-Tuning (SAD-Instruct)
+message: >-
+  Please cite this dataset using the metadata from
+  "preferred-citation".
+type: dataset
+authors:
+  - given-names: Muhammad Saif Ullah
+    family-names: Khan
+    orcid: 'https://orcid.org/0000-0002-7375-807X'
+  - given-names: Muhammad Zeshan
+    family-names: Afzal
+  - given-names: Didier
+    family-names: Stricker
+identifiers:
+  - type: doi
+    value: 10.12688/openreseurope.18551.1
+    description: The accompanying article.
+  - type: url
+    value: >-
+      https://doi.org/10.6084/m9.figshare.28321805
+    description: The URL of the dataset
+keywords:
+  - Large Language Model
+  - Situational Awareness
+license: CC-BY-NC-4.0
+preferred-citation:
+  authors:
+    - family-names: Khan
+      given-names: Muhammad Saif Ullah
+    - family-names: Afzal
+      given-names: Muhammad Zeshan
+    - family-names: Stricker
+      given-names: Didier
+  title: "SituationalLLM: Proactive Language Models with Scene Awareness for Dynamic, Contextual Task Guidance [version 1; peer review: awaiting peer review]"
+  doi: 10.12688/openreseurope.18551.1
+  issue: 61
+  journal: "Open Research Europe"
+  type: article
+  volume: 5
+  year: 2025

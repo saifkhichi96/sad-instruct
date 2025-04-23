@@ -1,4 +1,4 @@
-type: HuggingFacePrompter
+type: HuggingFaceBackend
 init_cfg:
   model: 'meta-llama/Meta-Llama-3-8B'
   temperature: 0.5

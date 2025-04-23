@@ -11,17 +11,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Local imports
-from prompting import PromptingStrategy, SceneGraph
+from prompting import LLM, SceneGraph
 
 
-class InstructionsChatbot(PromptingStrategy):
+class InstructionsChatbot(LLM):
     def __init__(self, scene_graph, scenario):
         super().__init__(init_cfg='configs/scenario2instructions.py')
         self.user_prompt.set('scene_graph', scene_graph)
         self.user_prompt.set('scenario', scenario)
 
         print('### System ###')
-        print(self.prompter.system_prompt)
+        print(self.backend.system_prompt)
         print('')
 
         self.started = False

@@ -1,4 +1,4 @@
-type: OpenAIPrompter
+type: OpenAIBackend
 init_cfg:
   model: 'gpt-4-vision-preview'
   temperature: 0.5

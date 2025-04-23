@@ -1,6 +1,6 @@
 dict(
-    prompter_cfg=dict(
-        type="GroqPrompter",
+    backend_cfg=dict(
+        type="GroqBackend",
         init_cfg=dict(
             model='NousResearch/Meta-Llama-3-8B-Instruct', #'llama3-70b-8192',
             temperature=0.1,

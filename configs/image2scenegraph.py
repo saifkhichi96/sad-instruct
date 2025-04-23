@@ -1,5 +1,5 @@
 dict(
-    prompter_cfg="configs/prompter/gpt-4-vision-preview.yaml",
+    backend_cfg="configs/prompter/gpt-4-vision-preview.yaml",
     system_prompt_cfg=dict(
         role="system",
         template="""

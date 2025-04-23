@@ -1,6 +1,6 @@
 import argparse
 
-from prompting import build_prompter_from_cfg, Prompt
+from prompting import build_llm_from_cfg, Prompt
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -9,8 +9,8 @@ load_dotenv()
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Prompt an LLM.')
-    parser.add_argument('prompter', type=str,
-                        help='Path to the prompter config file.')
+    parser.add_argument('backend', type=str,
+                        help='Path to the LLM backend configuration file.')
     parser.add_argument('--system', type=str, default="", help='System prompt.')
     parser.add_argument('--prompt', type=str, help='User prompt.', required=True)
     return parser.parse_args()
@@ -20,12 +20,12 @@ def main():
     args = parse_args()
 
     # Read CLI arguments
-    cfg = args.prompter
+    cfg = args.backend
     system_prompt = args.system
     user_prompt = args.prompt
 
     # Build the prompter
-    prompter = build_prompter_from_cfg(cfg)
+    prompter = build_llm_from_cfg(cfg)
     print(f"Using {prompter.__class__.__name__}({prompter.model})")
 
     # Set the system prompt

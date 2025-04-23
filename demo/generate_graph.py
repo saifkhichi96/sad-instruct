@@ -10,26 +10,27 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Local imports
-from prompting import PromptingStrategy, SceneGraph
+from .prompting import LLM
+from .scene_graph import SceneGraph
 
 
 def generate_graph(image_path, save_dir=None):
     # Load the image
     image = mpimg.imread(image_path)
 
-    strategy = PromptingStrategy(init_cfg='configs/image2scenegraph.py')
-    strategy.user_prompt.image_url = image_path
+    llm = LLM(init_cfg='configs/image2scenegraph.py')
+    llm.user_prompt.image_url = image_path
 
     print('### System ###')
-    print(strategy.prompter.system_prompt)
+    print(llm.backend.system_prompt)
     print('')
 
     print('### User ###')
-    print(strategy.user_prompt.template)
+    print(llm.user_prompt.template)
     print('IMAGE URL:', image_path)
 
     print('### Assistant ###')
-    response = strategy.prompt(strategy.user_prompt)
+    response = llm.prompt(llm.user_prompt)
 
     # Post-process the response
     response = response.lower().strip()
@@ -45,7 +46,7 @@ def generate_graph(image_path, save_dir=None):
         timestamp = time.strftime('%Y%m%d-%H%M%S')
         save_file = image_path.split('/')[-1].split('.')[0] + f'_{timestamp}.json'
         save_path = osp.join(save_dir, save_file)
-        history = strategy.prompter.messages
+        history = llm.backend.messages
         with open(save_path, 'w') as f:
             history = json.dumps(history, indent=4)
             f.write(history)
